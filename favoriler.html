@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorilerim</title>
+    <link rel="stylesheet" href="uyku-arkadasi.css"> <!-- Mevcut CSS dosyan -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<header class="top-bar">
+    <a href="purlie.html" class="btn">Anasayfa</a>
+    <h1>Favorilerim</h1>
+</header>
+
+<div class="urunler" id="favori-listesi">
+    <p>Favorilere eklenen ürünler burada görünecek.</p>
+</div>
+
+<footer>
+    <p>&copy; 2025 PURLİE</p>
+</footer>
+
+<script>
+// Favori ürünleri localStorage'dan çek
+document.addEventListener("DOMContentLoaded", function() {
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    const favoriteList = document.getElementById("favori-listesi");
+
+    // Eğer hiç favori yoksa mesaj göster
+    if (favorites.length === 0) {
+        favoriteList.innerHTML = "<p>Henüz favorilere eklenmiş ürün yok.</p>";
+        return;
+    }
+
+    // Ürünleri Listele
+    favoriteList.innerHTML = ""; // Önceki mesajı temizle
+    favorites.forEach(productId => {
+        // Ürün bilgilerini productId'den al
+        const productData = getProductData(productId);
+        
+        if (productData) {
+            favoriteList.innerHTML += `
+                <div class="product">
+                    <img src="${productData.image}" alt="${productData.name}">
+                    <p class="product-name">${productData.name}</p>
+                    <p class="product-price">${productData.price}₺</p>
+                    <button class="remove-btn" onclick="removeFromFavorites('${productId}')">Kaldır</button>
+                </div>
+            `;
+        }
+    });
+});
+
+// Ürün Verileri (Simülasyon)
+function getProductData(productId) {
+    const products = {
+        "kalpli-tavsan": { 
+            name: "Kalpli Tavşan", 
+            image: "images/kalplitavsan.jpeg", 
+            price: 300 
+        },
+        "uyku-arkadasi": { 
+            name: "Uyku Arkadaşı", 
+            image: "images/uykuarkadasi.jpeg", 
+            price: 250 
+        },
+        "civciv": { 
+            name: "Civciv", 
+            image: "images/civciv.jpeg", 
+            price: 200 
+        }
+    };
+    return products[productId] || null;
+}
+
+// Favorilerden Kaldırma Fonksiyonu
+function removeFromFavorites(productId) {
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    favorites = favorites.filter(id => id !== productId);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    location.reload(); // Sayfayı yenile
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Ticaret Sepeti</title>
+    <style>
+        #sepetButonu {
+            background-color: #4CAF50; /* Yeşil renk */
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #sepetButonu:hover {
+            background-color: #45a049; /* Buton üzerine gelindiğinde renk değişimi */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        .btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .btn:hover {
+            background-color: #e53935;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .total {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <button id="sepetButonu" onclick="sepetiGoster()">Sepetim (<span id="sepetSayisi">0</span>)</button>
+
+    <!-- Sepet, başlangıçta gizli -->
+    <div id="sepetDiv" style="display: none;">
+        <h2>Sepetiniz</h2>
+        <table id="sepetTablosu">
+            <thead>
+                <tr>
+                    <th>Ürün Adı</th>
+                    <th>Fiyat</th>
+                    <th>Miktar</th>
+                    <th>Toplam</th>
+                    <th>Sil</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div class="button-container">
+            <button class="btn" onclick="sepetiBosalt()">Sepeti Boşalt</button>
+            <p class="total" id="toplamTutar"></p>
+        </div>
+    </div>
+
+    <script>
+        let sepet = []; // Sepetteki ürünlerin listesi
+
+        // Sepete ürün ekleme
+        function urunEkle(urunAdi, urunFiyati, miktar = 1) {
+            let urun = {
+                ad: urunAdi,
+                fiyat: urunFiyati,
+                miktar: miktar,
+                toplam: urunFiyati * miktar
+            };
+            sepet.push(urun);
+            document.getElementById("sepetSayisi").innerText = sepet.length; // Sepet sayısını güncelle
+            console.log(sepet); // Sepet verilerini kontrol et
+            sepetiGoster(); // Sepeti göster
+        }
+
+        // Sepetteki ürünleri gösterme
+        function sepetiGoster() {
+            let tabloBody = document.querySelector("#sepetTablosu tbody");
+            tabloBody.innerHTML = ""; // Önceki verileri temizle
+
+            // Eğer sepette ürün yoksa, sepeti gizle
+            if (sepet.length === 0) {
+                document.getElementById("sepetDiv").style.display = "none";
+                alert("Sepetiniz boş.");
+            } else {
+                document.getElementById("sepetDiv").style.display = "block"; // Sepeti göster
+                sepet.forEach((urun, index) => {
+                    let tr = document.createElement("tr");
+
+                    tr.innerHTML = `
+                        <td>${urun.ad}</td>
+                        <td>${urun.fiyat} TL</td>
+                        <td>
+                            <button onclick="miktarDegistir(${index}, -1)">-</button>
+                            ${urun.miktar}
+                            <button onclick="miktarDegistir(${index}, 1)">+</button>
+                        </td>
+                        <td>${urun.toplam} TL</td>
+                        <td><button class="btn" onclick="urunSil(${index})">Sil</button></td>
+                    `;
+                    tabloBody.appendChild(tr);
+                });
+
+                // Toplam tutarı hesapla
+                let toplam = sepet.reduce((sum, urun) => sum + urun.toplam, 0);
+                let kdv = toplam * 0.18; // %18 KDV
+                document.getElementById("toplamTutar").innerText = `Toplam: ${toplam + kdv} TL (KDV Dahil)`;
+            }
+        }
+
+        // Ürün silme
+        function urunSil(index) {
+            sepet.splice(index, 1); // Sepetten ürünü kaldır
+            document.getElementById("sepetSayisi").innerText = sepet.length;
+            sepetiGoster(); // Sepeti tekrar göster
+        }
+
+        // Ürün miktarını artırma veya azaltma
+        function miktarDegistir(index, degisim) {
+            let urun = sepet[index];
+            urun.miktar += degisim;
+
+            if (urun.miktar < 1) urun.miktar = 1; // Miktar 1'den küçük olamaz
+
+            urun.toplam = urun.fiyat * urun.miktar; // Toplamı güncelle
+            sepetiGoster(); // Sepeti tekrar göster
+        }
+
+        // Sepeti boşaltma
+        function sepetiBosalt() {
+            sepet = [];
+            document.getElementById("sepetSayisi").innerText = sepet.length;
+            sepetiGoster(); // Sepeti tekrar göster
+        }
+
+        // Örnek ürün ekleme
+        urunEkle("Amigurumi Bebek", 45);
+        urunEkle("Amigurumi Yastık", 30);
+    </script>
+</body>
+</html>
+
+

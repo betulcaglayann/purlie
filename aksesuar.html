@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uyku Arkadaşı</title>
+    <link rel="stylesheet" href="aksesuar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+            <header>
+                <header class="top-bar">
+                    <div class="menu" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i> <span>MENÜ</span>
+</div>
+                    </div>
+                    <!-- Kategori Menüsü (Başta gizli olacak) -->
+<div id="sidebar" class="sidebar">
+    <ul>
+        <li><a href="purlie.html">Anasayfa</a></li>
+        <li><a href="uyku-arkadasi.html">Uyku Arkadaşı</a></li>
+        <li><a href="anahtarlık.html">Anahtarlık</a></li>
+        <li><a href="buket.html">Buket</a></li>
+        <li><a href="aksesuar.html">Aksesuar</a></li>
+    </ul>
+</div>
+                
+                    <div class="search-bar">
+                        <input type="text" placeholder="Ara...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                
+                    <div class="account-section">
+                        <a href="hesabim.html"><i class="fas fa-user"></i> HESABIM</a>
+                        <a href="favoriler.html"><i class="fas fa-heart"></i> FAVORİLERİM</a>
+                        <a href="sepet.html"><i class="fas fa-shopping-cart"></i></a>
+                    </div>
+                    <script src="search.js" defer></script>
+    </header>
+
+</div>
+<div class="urunler">
+
+    <div class="product">
+        <img src="images/fiyonkcanta.jpg" alt="Pembe Fiyonk Çanta">
+        <p class="product-name">Pembe Fiyonk Çanta</p>
+        <p class="product-price">500₺</p>
+        <button class="add-to-cart-btn">Sepete Ekle</button>
+    </div>
+    
+    <div class="product">
+        <img src="images/kablosüs.jpg" alt="Şarj Kablosu Aksesuarı">
+        <p class="product-name">Şarj Kablosu Aksesuarı</p>
+        <p class="product-price">300₺</p>
+        <button class="add-to-cart-btn">Sepete Ekle</button>
+    </div>
+    <footer>
+        <p>&copy; 2025 PURLİE</p>
+    </footer>
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById("sidebar");
+            if (sidebar.style.left === "-250px") {
+                sidebar.style.left = "0"; // Aç
+            } else {
+                sidebar.style.left = "-250px"; // Kapat
+            }
+        }
+        // HTML sayfanızın sonuna, diğer script taglerinin yanına ekleyin
+
+        </script>
+        <script>
+            // Sepete ekleme fonksiyonu
+            function addToCart(productName, price) {
+                // Sepet öğelerini localStorage'dan al
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                
+                // Ürünü sepete ekle
+                cart.push({
+                    name: productName,
+                    price: price,
+                    quantity: 1
+                });
+                
+                // Sepeti localStorage'a kaydet
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                // Kullanıcıya bildirim göster
+                alert(productName + " sepete eklendi!");
+                
+                // Sepet simgesini güncelle (isteğe bağlı)
+                updateCartIcon();
+            }
+            
+            // Sepet simgesini güncelleme fonksiyonu
+            function updateCartIcon() {
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                let totalItems = 0;
+                
+                // Sepetteki toplam ürün sayısını hesapla
+                cart.forEach(item => {
+                    totalItems += item.quantity;
+                });
+                
+                // Sepet simgesinin yanında bir sayaç göster
+                const cartIcon = document.querySelector('.fa-shopping-cart');
+                if (cartIcon) {
+                    // Mevcut sayacı kaldır
+                    const existingBadge = document.querySelector('.cart-badge');
+                    if (existingBadge) {
+                        existingBadge.remove();
+                    }
+                    
+                    // Eğer sepette ürün varsa sayaç ekle
+                    if (totalItems > 0) {
+                        const badge = document.createElement('span');
+                        badge.className = 'cart-badge';
+                        badge.textContent = totalItems;
+                        cartIcon.parentNode.appendChild(badge);
+                    }
+                }
+            }
+            
+            // Sayfa yüklendiğinde tüm "Sepete Ekle" butonlarına olay dinleyicileri ekle
+            document.addEventListener('DOMContentLoaded', function() {
+                const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+                
+                addToCartButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Bu butonun bulunduğu ürün kartını bul
+                        const product = this.closest('.product');
+                        
+                        // Ürün adı ve fiyatını al
+                        const productName = product.querySelector('.product-name').textContent;
+                        const productPrice = product.querySelector('.product-price').textContent;
+                        
+                        // Fiyatı temizle (₺ işaretini kaldır ve sayıya dönüştür)
+                        const price = parseFloat(productPrice.replace('₺', '').trim());
+                        
+                        // Sepete ekle
+                        addToCart(productName, price);
+                    });
+                });
+                
+                // Sayfa yüklendiğinde sepet simgesini güncelle
+                updateCartIcon();
+            });
+        </script>
+</body>
+</html>
